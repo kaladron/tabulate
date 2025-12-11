@@ -36,7 +36,10 @@ include(GNUInstallDirs)
 add_library(tabulate INTERFACE)
 add_library(tabulate::tabulate ALIAS tabulate)
 
-if (USE_CPP17)
+if (USE_CPP20)
+  target_compile_features(tabulate INTERFACE cxx_std_20)
+  message(STATUS "Using C++20")
+elseif (USE_CPP17)
   target_compile_features(tabulate INTERFACE cxx_std_17)
   message(STATUS "Using C++17")
 else()
@@ -54,46 +57,17 @@ endif()
 
 # C++20 Module Support
 # ====================
-# Automatically enabled when CMake >= 3.28, C++20 compiler, and Ninja/VS generator are detected
+# Enabled when USE_CPP20 is set and CMake >= 3.28
 # Can be disabled by setting TABULATE_BUILD_MODULE=OFF
-# Requires Ninja, Ninja Multi-Config, or Visual Studio >= 17.4 generator
-# Note: GCC may require additional setup for module scanning; Clang >= 16 is recommended
+# Note: Requires a generator that supports C++20 modules (Ninja or Visual Studio 17.4+)
 
-# Auto-detect if C++20 modules can be built
-set(TABULATE_CAN_BUILD_MODULE FALSE)
 set(TABULATE_MODULE_TARGET_CREATED FALSE)
 
-if(NOT CMAKE_VERSION VERSION_LESS "3.28")
-  if(CMAKE_GENERATOR MATCHES "Ninja" OR CMAKE_GENERATOR MATCHES "Visual Studio")
-    # Check for C++20 support
-    include(CheckCXXCompilerFlag)
-    check_cxx_compiler_flag("-std=c++20" COMPILER_SUPPORTS_CXX20)
-    if(NOT COMPILER_SUPPORTS_CXX20)
-      check_cxx_compiler_flag("/std:c++20" COMPILER_SUPPORTS_CXX20_MSVC)
-      if(COMPILER_SUPPORTS_CXX20_MSVC)
-        set(COMPILER_SUPPORTS_CXX20 TRUE)
-      endif()
-    endif()
-    if(COMPILER_SUPPORTS_CXX20)
-      set(TABULATE_CAN_BUILD_MODULE TRUE)
-    endif()
-  endif()
-endif()
+# Build module when USE_CPP20 is enabled and CMake version supports it
+if(USE_CPP20 AND NOT CMAKE_VERSION VERSION_LESS "3.28")
+  option(TABULATE_BUILD_MODULE "Build C++20 module" ON)
 
-# Option to control module building (defaults to auto-detected capability)
-option(TABULATE_BUILD_MODULE "Build C++20 module (requires CMake 3.28+, Ninja/VS generator, and C++20 compiler)" ${TABULATE_CAN_BUILD_MODULE})
-
-if(TABULATE_BUILD_MODULE)
-  if(NOT TABULATE_CAN_BUILD_MODULE)
-    # Provide specific error messages
-    if(CMAKE_VERSION VERSION_LESS "3.28")
-      message(WARNING "C++20 modules require CMake 3.28 or higher. Module target will not be built.")
-    elseif(NOT (CMAKE_GENERATOR MATCHES "Ninja" OR CMAKE_GENERATOR MATCHES "Visual Studio"))
-      message(WARNING "C++20 modules require Ninja or Visual Studio generator. Current generator '${CMAKE_GENERATOR}' is not supported. Module target will not be built.")
-    elseif(NOT COMPILER_SUPPORTS_CXX20)
-      message(WARNING "C++20 is not supported by the compiler. Module target will not be built.")
-    endif()
-  else()
+  if(TABULATE_BUILD_MODULE)
     message(STATUS "Building C++20 module")
 
     # Enable module scanning

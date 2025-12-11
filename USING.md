@@ -65,41 +65,37 @@ target_link_libraries(my_app PRIVATE tabulate::tabulate)
 
 ## C++20 Modules
 
-tabulate provides C++20 module support, allowing you to use `import tabulate;` instead of header includes. The module is **automatically built** when your environment supports it.
+tabulate provides C++20 module support, allowing you to use `import tabulate;` instead of header includes. The module is built when `USE_CPP20` is enabled.
 
 ### Requirements
 
 - CMake 3.28 or higher
-- Ninja or Visual Studio 17.4+ generator
+- `USE_CPP20=ON` CMake option
 - C++20 compatible compiler (Clang 16+ recommended)
-
-When all requirements are met, the `tabulate::tabulate_module` target is automatically available.
+- Generator that supports C++20 modules (Ninja or Visual Studio 17.4+)
 
 ### Building with Modules
 
-With a compatible environment, the module is built automatically:
+Enable C++20 mode to build the module:
 
 ```bash
-cmake -B build -G Ninja -DCMAKE_CXX_COMPILER=clang++
+cmake -B build -G Ninja -DUSE_CPP20=ON
 cmake --build build
 ```
 
-To explicitly disable module building, set `TABULATE_BUILD_MODULE=OFF`:
+To disable module building while still using C++20, set `TABULATE_BUILD_MODULE=OFF`:
 
 ```bash
-cmake -B build -G Ninja -DTABULATE_BUILD_MODULE=OFF
+cmake -B build -G Ninja -DUSE_CPP20=ON -DTABULATE_BUILD_MODULE=OFF
 ```
 
 ### Using Modules with FetchContent
 
-When using FetchContent with a compatible environment (CMake 3.28+, Ninja generator, C++20 compiler), the module target is automatically available:
+Set `USE_CPP20` before calling `FetchContent_MakeAvailable`:
 
 ```cmake
 cmake_minimum_required(VERSION 3.28)
 project(my_project CXX)
-
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(FetchContent)
 
@@ -110,6 +106,9 @@ FetchContent_Declare(
   GIT_SHALLOW TRUE
   EXCLUDE_FROM_ALL
 )
+
+# Enable C++20 mode before making tabulate available
+set(USE_CPP20 ON CACHE BOOL "" FORCE)
 
 FetchContent_MakeAvailable(tabulate)
 
