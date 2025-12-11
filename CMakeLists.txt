@@ -83,11 +83,6 @@ endif()
 # Option to control module building (defaults to auto-detected capability)
 option(TABULATE_BUILD_MODULE "Build C++20 module (requires CMake 3.28+, Ninja/VS generator, and C++20 compiler)" ${TABULATE_CAN_BUILD_MODULE})
 
-# Also support the legacy BUILD_MODULE option for backwards compatibility
-if(DEFINED BUILD_MODULE)
-  set(TABULATE_BUILD_MODULE ${BUILD_MODULE})
-endif()
-
 if(TABULATE_BUILD_MODULE)
   if(NOT TABULATE_CAN_BUILD_MODULE)
     # Provide specific error messages
