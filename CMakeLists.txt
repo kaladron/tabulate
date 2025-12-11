@@ -58,6 +58,7 @@ endif()
 # Only available when BUILD_MODULE is ON and CMake >= 3.28 with C++20 support
 # Requires Ninja, Ninja Multi-Config, or Visual Studio >= 17.4 generator
 # Note: GCC may require additional setup for module scanning; Clang >= 16 is recommended
+set(TABULATE_MODULE_TARGET_CREATED FALSE)
 if(BUILD_MODULE)
   if(CMAKE_VERSION VERSION_LESS "3.28")
     message(WARNING "C++20 modules require CMake 3.28 or higher. Module target will not be built.")
@@ -92,6 +93,7 @@ if(BUILD_MODULE)
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
       )
       add_library(tabulate::tabulate_module ALIAS tabulate_module)
+      set(TABULATE_MODULE_TARGET_CREATED TRUE)
     else()
       message(WARNING "C++20 is not supported by the compiler. Module target will not be built.")
     endif()
@@ -107,6 +109,10 @@ write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Conf
                                  COMPATIBILITY AnyNewerVersion)
 
 install(TARGETS tabulate EXPORT tabulateTargets)
+if(TABULATE_MODULE_TARGET_CREATED)
+  install(TARGETS tabulate_module EXPORT tabulateTargets
+          FILE_SET CXX_MODULES DESTINATION ${CMAKE_INSTALL_LIBDIR})
+endif()
 install(EXPORT tabulateTargets
         FILE tabulateTargets.cmake
         NAMESPACE tabulate::
