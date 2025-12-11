@@ -140,7 +140,7 @@ The module exports the following types from the `tabulate` namespace:
 
 - `Table` - Main table class
 - `FontAlign` - Font alignment enum
-- `FontStyle` - Font style enum  
+- `FontStyle` - Font style enum
 - `Color` - Color enum
 - `Format` - Format settings class
 - `RowStream` - Stream-based row builder

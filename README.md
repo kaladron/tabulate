@@ -53,7 +53,7 @@
 
 **NOTE** Tabulate supports `>=C++11`. The rest of this README, however, assumes `C++17` support.
 
-For detailed integration instructions including CMake FetchContent, find_package, and C++20 modules support, see [USING.md](USING.md). 
+For detailed integration instructions including CMake FetchContent, find_package, and C++20 modules support, see [USING.md](USING.md).
 
 Create a `Table` object and call `Table.add_rows` to add rows to your table.
 
