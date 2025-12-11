@@ -28,6 +28,7 @@
 ## Table of Contents
 
 *   [Quick Start](#quick-start)
+*   [Integration Guide](USING.md)
 *   [Formatting Options](#formatting-options)
     *   [Style Inheritance Model](#style-inheritance-model)
     *   [Word Wrapping](#word-wrapping)
@@ -50,7 +51,9 @@
 
 `tabulate` is a header-only library. Just add `include/` to your `include_directories` and you should be good to go. A single header file version is also available in `single_include/`.
 
-**NOTE** Tabulate supports `>=C++11`. The rest of this README, however, assumes `C++17` support. 
+**NOTE** Tabulate supports `>=C++11`. The rest of this README, however, assumes `C++17` support.
+
+For detailed integration instructions including CMake FetchContent, find_package, and C++20 modules support, see [USING.md](USING.md). 
 
 Create a `Table` object and call `Table.add_rows` to add rows to your table.
 
