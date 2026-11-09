@@ -28,3 +28,32 @@ jobs:
       - name: Test
         working-directory: build
         run: ctest --output-on-failure -C Release
+
+  build-and-test-modules:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            cmake_args: "-G Ninja -DCMAKE_CXX_COMPILER=g++-14"
+          - os: windows-latest
+            cmake_args: ""
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install Ninja and GCC 14 (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get update && sudo apt-get install -y g++-14 ninja-build
+
+      - name: Configure
+        run: cmake -S . -B build ${{ matrix.cmake_args }} -Dtabulate_BUILD_TESTS=ON -Dtabulate_BUILD_MODULES=ON
+
+      - name: Build
+        run: cmake --build build --config Release --parallel
+
+      - name: Test
+        working-directory: build
+        run: ctest --output-on-failure -C Release -R "^module$"
